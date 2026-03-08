@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Ultra 2026 Tier List</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: #0a0a0f; color: #fff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+  ::-webkit-scrollbar { height: 4px; width: 4px; }
+  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(168,85,247,0.4); } 50% { box-shadow: 0 0 0 6px rgba(168,85,247,0); } }
+  @keyframes tierGlow { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  .header { text-align: center; padding: 14px 8px 6px; }
+  .title { font-family: 'Orbitron', sans-serif; font-size: clamp(18px,5vw,32px); font-weight: 900;
+    background: linear-gradient(135deg, #00d4ff, #a855f7, #ff2d95);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; letter-spacing: 2px; }
+  .subtitle { color: #555; margin: 4px 0 0; font-family: 'Rajdhani', sans-serif; font-size: 12px;
+    letter-spacing: 2px; font-weight: 700; transition: color 0.2s; }
+  .subtitle.active { color: #a855f7; }
+
+  .tabs { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; padding: 0 8px; margin-bottom: 12px; }
+  .tab { padding: 7px 14px; border-radius: 6px; border: 2px solid #282838; background: rgba(255,255,255,0.02);
+    color: #777; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; letter-spacing: 1px; }
+  .tab.active { border-color: #a855f7; background: rgba(168,85,247,0.15); color: #d8b4fe; }
+  .tab.reset { border-color: #332222; background: rgba(255,50,50,0.06); color: #f87171; font-size: 12px; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 8px; }
+
+  .tier-row { display: flex; margin-bottom: 3px; border-radius: 6px; overflow: hidden;
+    border: 1px solid #1a1a2e; min-height: 62px; transition: border-color 0.2s, background 0.2s; }
+  .tier-row.target { cursor: pointer; }
+  .tier-label { width: 44px; min-width: 44px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 20px; color: #000; position: relative; }
+  .tier-label .glow { position: absolute; inset: 0; background: rgba(255,255,255,0.15); animation: tierGlow 1s ease-in-out infinite; }
+  .tier-content { flex: 1; display: flex; flex-wrap: wrap; align-items: flex-start; align-content: flex-start;
+    gap: 4px; padding: 5px; min-height: 52px; }
+  .tier-placeholder { width: 100%; display: flex; align-items: center; justify-content: center;
+    font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    animation: tierGlow 1s ease-in-out infinite; }
+
+  .unranked-box { max-width: 900px; margin: 16px auto 0; border: 1px solid #1a1a2e; border-radius: 8px;
+    background: rgba(255,255,255,0.015); transition: border-color 0.2s; }
+  .unranked-box.target { border-color: #a855f766; background: rgba(168,85,247,0.04); cursor: pointer; }
+  .unranked-header { padding: 8px 12px; border-bottom: 1px solid #1a1a2e; font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 12px; color: #555; letter-spacing: 2px; display: flex; justify-content: space-between; }
+  .unranked-content { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px; min-height: 70px; }
+
+  .artist { display: flex; flex-direction: column; align-items: center; width: 62px; cursor: pointer;
+    user-select: none; transition: opacity 0.2s, transform 0.15s; }
+  .artist.dimmed { opacity: 0.35; }
+  .artist.selected { transform: scale(1.1); }
+  .artist-icon { width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 14px; color: rgba(255,255,255,0.85);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); letter-spacing: 1px; }
+  .artist.selected .artist-icon { border: 2px solid #a855f7;
+    box-shadow: 0 0 0 2px #a855f7, 0 0 12px rgba(168,85,247,0.5); animation: pulse 1.2s ease-in-out infinite; }
+  .artist-name { font-size: 8px; font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #999;
+    text-align: center; margin-top: 2px; line-height: 1.1; max-width: 62px; overflow: hidden;
+    text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; letter-spacing: 0.3px; }
+  .artist.selected .artist-name { color: #d8b4fe; }
+
+  .cancel-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 14px 16px;
+    background: linear-gradient(to top, #0a0a0f, #0a0a0fee, #0a0a0fcc);
+    display: flex; justify-content: center; z-index: 10; }
+  .cancel-btn { padding: 10px 28px; border-radius: 8px; border: 2px solid #a855f7;
+    background: rgba(168,85,247,0.15); color: #d8b4fe; font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 14px; cursor: pointer; letter-spacing: 2px; }
+
+  /* Name entry screen */
+  .name-screen { display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px; gap: 20px; }
+  .name-input { background: rgba(255,255,255,0.05); border: 2px solid #333; border-radius: 8px;
+    color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700;
+    padding: 12px 20px; text-align: center; outline: none; letter-spacing: 1px; width: 260px; }
+  .name-input:focus { border-color: #a855f7; }
+  .name-input::placeholder { color: #444; }
+  .go-btn { padding: 12px 36px; border-radius: 8px; border: 2px solid #a855f7;
+    background: rgba(168,85,247,0.2); color: #d8b4fe; font-family: 'Orbitron', sans-serif;
+    font-weight: 700; font-size: 16px; cursor: pointer; letter-spacing: 2px; }
+  .go-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* Compare screen */
+  .compare-screen { padding: 16px 8px; }
+  .compare-header { text-align: center; margin-bottom: 16px; }
+  .compare-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .compare-col { flex: 1; min-width: 0; }
+  .compare-col-header { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px;
+    color: #888; letter-spacing: 1px; text-align: center; margin-bottom: 6px; padding: 4px;
+    border-bottom: 1px solid #222; }
+  .compare-tier-row { display: flex; margin-bottom: 2px; border-radius: 4px; overflow: hidden;
+    border: 1px solid #1a1a2e; min-height: 36px; }
+  .compare-tier-label { width: 28px; min-width: 28px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 13px; color: #000; }
+  .compare-tier-content { flex: 1; display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; }
+  .compare-artist { display: flex; flex-direction: column; align-items: center; width: 42px; }
+  .compare-artist-icon { width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center;
+    justify-content: center; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 10px;
+    color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.1); }
+  .compare-artist-name { font-size: 6px; font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #888;
+    text-align: center; margin-top: 1px; line-height: 1; max-width: 42px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; }
+  .match { outline: 2px solid #22c55e; outline-offset: -1px; }
+
+  .mode-tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap; }
+
+  .back-btn { padding: 7px 14px; border-radius: 6px; border: 2px solid #333;
+    background: rgba(255,255,255,0.03); color: #888; font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 13px; cursor: pointer; letter-spacing: 1px; }
+
+  .save-btn { padding: 7px 14px; border-radius: 6px; border: 2px solid #22c55e;
+    background: rgba(34,197,94,0.1); color: #86efac; font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 12px; cursor: pointer; letter-spacing: 1px; }
+  .save-btn.done { border-color: #666; color: #666; }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const TIERS = [
+  { id: "S", label: "S", color: "#ff4444" },
+  { id: "A", label: "A", color: "#ff8800" },
+  { id: "B", label: "B", color: "#ffcc00" },
+  { id: "C", label: "C", color: "#88cc00" },
+  { id: "D", label: "D", color: "#00ccff" },
+  { id: "F", label: "F", color: "#8866ff" },
+];
+const TIER_IDS = TIERS.map(t => t.id);
+const DAYS = { friday: "FRI 3/27", saturday: "SAT 3/28", sunday: "SUN 3/29" };
+const ARTISTS = {
+  friday: ["Major Lazer","Alesso","Martin Garrix","BZRP","Illenium","Worship","Voyd","Frank Walker","Armin Van Buuren","Marlon Hoffstadt","Lilly Palmer","Vini Vici","Superstrings","Matty Ralph","Prada 2000","Eric Prydz","Vintage Culture","Miss Monique","Massano","Mar-T","Sara Landry","Clara Cuvé","999999999","ALT8","Godtripper","Levity","Lasership","Of The Trees","Black Tiger Sex Machine","Shima","Afrobeta","Bloody Beetroots","Riot Ten","Laidback Luke","Steve Aoki","Jessica Audiffred","Nostalgix","Ookay","Linney","Luca Testa","Adam De Great","DJ Hannah","Tak Shak","Los De La Vega","Richard Fraioli","Mind.E","Nudos"],
+  saturday: ["Sebastian Ingrosso","Steve Angello","Hardwell","Excision","Alan Walker","Loud Luxury","Nicky Romero","Halō","Mykris","Gil Glaze","ISOXO","¥OU$UKE ¥UK1MAT$U","Hamdi","Outlaw","Trym","Kai Wachi","Bou","Hol!","ARMNHMR","Daniel Allan","Sidequest","Distinct Motive","Julian Cross","Carl Cox","Adam Beyer","Joseph Capriati","Eli Brown","Sasha","John Digweed","Alan Fitzpatrick","Marco Faraone","Juliet Fox","Andy Pate","Rod B.","Joris Voorn","Korolova","Cassian","Colyn","Innellea","Deep Dish","Kasia","Rivo","Olympe","Joa","Brutalismus 3000","Boys Noize","Madeon","Snow Strippers","Confidence Man","Miss Bashful","Soren","D-Sturb","Dual Damage","Mish","Da Tweekaz","Coone","The Saints","The Purge","Audiofreq","Darksiderz","Kreation","Wally Lopez","Alexander Som","Marco Ninni","Pinto","Jack Vice","Lucy Guo","Bill Kelly","Omar Deaz","Soul Goodman","Dabura","Kaoru","Juno","Wyzzard","Bebe Breaks","Cimeo"],
+  sunday: ["John Summit","DJ Snake","Afrojack","ARTBAT","Maddix","R3HAB","Me N Ü","Kapuchon","Wankdat","Ray Volpe","Sullivan King","Peekaboo","Holy Priest","Andy C","Layz","Bolo","Gorillat","Big Florida","Amelie Lens","Boris Brejcha","Adriatique","Argy","Mind Against","Scenarios","Bassett","Christopher James","The Martinez Brothers","Dennis Cruz","Seth Troxler","Rossi.","Malone","Black Fancy","Plastik Funk","M.O.N.R.O.E.","ZHU","Tim3less","Louis The Child","Parisi","Boiish","Peterblue","DJ Gigola","MCR-T","Fcukers","X Club","Frost Children","Eera","Metaphysical","X-Con","Marvin Delgado","CJ","Purple","Luke Hunter","Audiosal","Wags","Lemony Snicketts","Sebastian Morxx","Rodrigo Vieira","Andy Ares","CVMRN","Dubplates & Dragons"]
+};
+
+function genColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return `hsl(${Math.abs(h) % 360}, 65%, 35%)`;
+}
+function initials(name) { return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase(); }
+
+function freshTiers() {
+  const t = {};
+  Object.keys(DAYS).forEach(day => {
+    t[day] = {};
+    TIER_IDS.forEach(id => t[day][id] = []);
+    t[day].unranked = [...ARTISTS[day]];
+  });
+  return t;
+}
+
+// State
+let screen = "name"; // name | rank | compare
+let userName = "";
+let activeDay = "friday";
+let selected = null;
+let tiers = freshTiers();
+let savedUsers = {}; // { name: tiersSnapshot }
+let compareUsers = []; // [name, name]
+
+function save() {
+  savedUsers[userName] = JSON.parse(JSON.stringify(tiers));
+}
+
+function render() {
+  const app = document.getElementById("app");
+  if (screen === "name") app.innerHTML = renderNameScreen();
+  else if (screen === "rank") app.innerHTML = renderRankScreen();
+  else if (screen === "compare") app.innerHTML = renderCompareScreen();
+  bindEvents();
+}
+
+function renderNameScreen() {
+  const names = Object.keys(savedUsers);
+  return `
+    <div class="name-screen">
+      <h1 class="title">ULTRA 2026 TIER LIST</h1>
+      <p style="color:#666;font-family:'Rajdhani',sans-serif;font-size:13px;letter-spacing:2px;font-weight:700;margin:0;">ENTER YOUR NAME</p>
+      <input class="name-input" id="nameInput" placeholder="Your name" maxlength="20" value="${userName}">
+      <button class="go-btn" id="goBtn" ${userName.trim() ? "" : "disabled"}>START RANKING</button>
+      ${names.length >= 2 ? `
+        <div style="margin-top:20px;text-align:center;">
+          <p style="color:#555;font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;margin:0 0 10px;">SAVED RANKINGS (${names.length})</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
+            ${names.map(n => `<span style="padding:4px 12px;border-radius:4px;background:rgba(168,85,247,0.1);border:1px solid #a855f733;color:#d8b4fe;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;">${esc(n)}</span>`).join("")}
+          </div>
+          <button class="go-btn" id="compareBtn" style="font-size:13px;padding:10px 28px;">COMPARE RANKINGS</button>
+        </div>
+      ` : names.length === 1 ? `
+        <p style="color:#444;font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:1px;font-weight:700;margin-top:16px;">
+          ${esc(names[0])}'s rankings saved — need 1 more to compare
+        </p>
+      ` : ""}
+    </div>`;
+}
+
+function renderRankScreen() {
+  const ct = tiers[activeDay];
+  const hs = selected !== null;
+  let html = `<div style="padding:12px 8px;${hs ? "padding-bottom:80px;" : ""}">`;
+  html += `<div class="header">
+    <h1 class="title">ULTRA 2026</h1>
+    <p style="color:#a855f7;font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:1px;font-weight:700;margin:2px 0 0;">
+      RANKING AS: ${esc(userName.toUpperCase())}</p>
+    <p class="subtitle ${hs ? "active" : ""}">${hs ? `TAP A TIER TO PLACE "${esc(selected.artist.toUpperCase())}"` : "TAP AN ARTIST, THEN TAP A TIER"}</p>
+  </div>`;
+
+  // Day tabs
+  html += `<div class="tabs">`;
+  Object.entries(DAYS).forEach(([k, v]) => {
+    html += `<button class="tab ${activeDay === k ? "active" : ""}" data-day="${k}">${v}</button>`;
+  });
+  html += `<button class="tab reset" id="resetBtn">RESET</button>`;
+  html += `<button class="save-btn ${savedUsers[userName] ? "done" : ""}" id="saveBtn">
+    ${savedUsers[userName] ? "✓ SAVED" : "SAVE & FINISH"}</button>`;
+  html += `<button class="back-btn" id="backBtn">← BACK</button>`;
+  html += `</div>`;
+
+  // Tiers
+  html += `<div class="container">`;
+  TIERS.forEach(tier => {
+    const isTarget = hs && selected.fromTier !== tier.id;
+    html += `<div class="tier-row ${isTarget ? "target" : ""}" data-tier="${tier.id}"
+      style="${isTarget ? `border-color:${tier.color}88;background:${tier.color}08;` : ""}">
+      <div class="tier-label" style="background:${tier.color}">${tier.label}${isTarget ? '<div class="glow"></div>' : ""}</div>
+      <div class="tier-content">`;
+    ct[tier.id].forEach(a => { html += artistHTML(a, tier.id, hs); });
+    if (ct[tier.id].length === 0 && isTarget) {
+      html += `<div class="tier-placeholder" style="color:${tier.color}88">TAP TO PLACE HERE</div>`;
+    }
+    html += `</div></div>`;
+  });
+  html += `</div>`;
+
+  // Unranked
+  const unTarget = hs && selected.fromTier !== "unranked";
+  html += `<div class="unranked-box ${unTarget ? "target" : ""}" data-tier="unranked" style="max-width:900px;margin:16px auto 0;padding:0 0;">
+    <div class="unranked-header"><span>UNRANKED</span><span>${ct.unranked.length} artists</span></div>
+    <div class="unranked-content">`;
+  ct.unranked.forEach(a => { html += artistHTML(a, "unranked", hs); });
+  html += `</div></div>`;
+
+  if (hs) {
+    html += `<div class="cancel-bar"><button class="cancel-btn" id="cancelBtn">CANCEL</button></div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function artistHTML(name, fromTier, hasSelection) {
+  const isSel = selected && selected.artist === name && selected.fromTier === fromTier;
+  const dimmed = hasSelection && !isSel;
+  return `<div class="artist ${isSel ? "selected" : ""} ${dimmed ? "dimmed" : ""}" data-artist="${esc(name)}" data-from="${fromTier}">
+    <div class="artist-icon" style="background:linear-gradient(135deg,${genColor(name)},${genColor(name)}dd)">${initials(name)}</div>
+    <div class="artist-name">${esc(name)}</div>
+  </div>`;
+}
+
+function renderCompareScreen() {
+  const names = Object.keys(savedUsers);
+  if (compareUsers.length < 2) compareUsers = [names[0], names[1]];
+
+  let html = `<div class="compare-screen">
+    <div class="compare-header">
+      <h1 class="title" style="font-size:clamp(16px,4vw,26px);">COMPARE RANKINGS</h1>
+      <div style="margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+        <button class="back-btn" id="backBtn">← BACK</button>`;
+  Object.entries(DAYS).forEach(([k, v]) => {
+    html += `<button class="tab ${activeDay === k ? "active" : ""}" data-day="${k}">${v}</button>`;
+  });
+  html += `</div>
+      <p style="color:#555;font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1px;font-weight:700;margin:8px 0 0;">
+        GREEN OUTLINE = BOTH RANKED IN SAME TIER</p>
+    </div>`;
+
+  // Build lookup for matches
+  const t1 = savedUsers[compareUsers[0]][activeDay];
+  const t2 = savedUsers[compareUsers[1]][activeDay];
+  const map1 = {}, map2 = {};
+  [...TIER_IDS, "unranked"].forEach(tid => {
+    (t1[tid] || []).forEach(a => map1[a] = tid);
+    (t2[tid] || []).forEach(a => map2[a] = tid);
+  });
+
+  html += `<div style="max-width:900px;margin:0 auto;">`;
+  html += `<div style="display:flex;gap:8px;">
+    <div class="compare-col"><div class="compare-col-header">${esc(compareUsers[0].toUpperCase())}</div></div>
+    <div class="compare-col"><div class="compare-col-header">${esc(compareUsers[1].toUpperCase())}</div></div>
+  </div>`;
+
+  TIERS.forEach(tier => {
+    html += `<div style="display:flex;gap:8px;margin-bottom:3px;">`;
+    [0, 1].forEach(i => {
+      const u = compareUsers[i];
+      const ct = savedUsers[u][activeDay];
+      const other = i === 0 ? map2 : map1;
+      html += `<div class="compare-col"><div class="compare-tier-row">
+        <div class="compare-tier-label" style="background:${tier.color}">${tier.label}</div>
+        <div class="compare-tier-content">`;
+      (ct[tier.id] || []).forEach(a => {
+        const match = other[a] === tier.id;
+        html += `<div class="compare-artist">
+          <div class="compare-artist-icon ${match ? "match" : ""}" style="background:linear-gradient(135deg,${genColor(a)},${genColor(a)}dd)">${initials(a)}</div>
+          <div class="compare-artist-name">${esc(a)}</div>
+        </div>`;
+      });
+      html += `</div></div></div>`;
+    });
+    html += `</div>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+function bindEvents() {
+  if (screen === "name") {
+    const inp = document.getElementById("nameInput");
+    const btn = document.getElementById("goBtn");
+    inp?.addEventListener("input", () => { userName = inp.value; btn.disabled = !inp.value.trim(); });
+    inp?.addEventListener("keydown", e => { if (e.key === "Enter" && inp.value.trim()) { screen = "rank"; render(); } });
+    btn?.addEventListener("click", () => { if (userName.trim()) { screen = "rank"; render(); } });
+    document.getElementById("compareBtn")?.addEventListener("click", () => { screen = "compare"; render(); });
+    inp?.focus();
+  }
+  else if (screen === "rank") {
+    document.querySelectorAll("[data-day]").forEach(el => {
+      el.addEventListener("click", () => { activeDay = el.dataset.day; selected = null; render(); });
+    });
+    document.getElementById("resetBtn")?.addEventListener("click", () => {
+      const day = {};
+      TIER_IDS.forEach(id => day[id] = []);
+      day.unranked = [...ARTISTS[activeDay]];
+      tiers[activeDay] = day;
+      selected = null;
+      render();
+    });
+    document.getElementById("saveBtn")?.addEventListener("click", () => { save(); render(); });
+    document.getElementById("backBtn")?.addEventListener("click", () => { screen = "name"; render(); });
+    document.getElementById("cancelBtn")?.addEventListener("click", () => { selected = null; render(); });
+
+    // Artist tap
+    document.querySelectorAll(".artist").forEach(el => {
+      el.addEventListener("click", e => {
+        e.stopPropagation();
+        const a = el.dataset.artist;
+        const f = el.dataset.from;
+        if (selected && selected.artist === a && selected.fromTier === f) { selected = null; }
+        else { selected = { artist: a, fromTier: f }; }
+        render();
+      });
+    });
+
+    // Tier tap
+    document.querySelectorAll("[data-tier]").forEach(el => {
+      el.addEventListener("click", () => {
+        if (!selected) return;
+        const target = el.dataset.tier;
+        if (selected.fromTier === target) { selected = null; render(); return; }
+        const ct = tiers[activeDay];
+        ct[selected.fromTier] = ct[selected.fromTier].filter(a => a !== selected.artist);
+        ct[target].push(selected.artist);
+        selected = null;
+        render();
+      });
+    });
+  }
+  else if (screen === "compare") {
+    document.querySelectorAll("[data-day]").forEach(el => {
+      el.addEventListener("click", () => { activeDay = el.dataset.day; render(); });
+    });
+    document.getElementById("backBtn")?.addEventListener("click", () => { screen = "name"; render(); });
+  }
+}
+
+render();
+</script>
+</body>
+</html>
